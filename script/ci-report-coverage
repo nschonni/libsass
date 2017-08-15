@@ -35,7 +35,7 @@ if [ "x$COVERAGE" = "xyes" ]; then
   # create summarized report
   gcovr -r .
   # submit report to coveralls.io
-  coveralls $EXCLUDE_COVERAGE --gcov-options '\-lp'
+  coveralls "$EXCLUDE_COVERAGE" --gcov-options '\-lp'
 
 else
   echo "skip coverage reporting"

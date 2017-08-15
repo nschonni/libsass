@@ -5,16 +5,31 @@ set -e
 script/bootstrap
 
 # export this path right here (was in script/spec before)
-export SASS_LIBSASS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../ && pwd )"
+export SASS_LIBSASS_PATH;
+SASS_LIBSASS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../ && pwd )"
 
 # use some defaults if not running under travis ci
-if [ "x$CONTINUOUS_INTEGRATION" == "x" ]; then export CONTINUOUS_INTEGRATION=true; fi
-if [ "x$TRAVIS_BUILD_DIR" == "x" ]; then export TRAVIS_BUILD_DIR=$(pwd); fi
-if [ "x$SASS_SASSC_PATH" == "x" ]; then export SASS_SASSC_PATH=$(pwd)/sassc; fi
-if [ "x$SASS_SPEC_PATH" == "x" ]; then export SASS_SPEC_PATH=$(pwd)/sass-spec; fi
+if [ "x$CONTINUOUS_INTEGRATION" == "x" ]; then
+  export CONTINUOUS_INTEGRATION=true;
+fi
+if [ "x$TRAVIS_BUILD_DIR" == "x" ]; then
+  export TRAVIS_BUILD_DIR;
+  TRAVIS_BUILD_DIR="$(pwd)";
+fi
+if [ "x$SASS_SASSC_PATH" == "x" ]; then
+  export SASS_SASSC_PATH;
+  SASS_SASSC_PATH="$(pwd)/sassc";
+fi
+if [ "x$SASS_SPEC_PATH" == "x" ]; then
+  export SASS_SPEC_PATH;
+  SASS_SPEC_PATH="$(pwd)/sass-spec";
+fi
 
 # try to get the os name from uname (and filter via perl - probably not the most portable way?)
-if [ "x$TRAVIS_OS_NAME" == "x" ]; then export TRAVIS_OS_NAME=`uname -s | perl -ne 'print lc \$1 if\(/^([a-zA-Z]+)/'\)`; fi
+if [ "x$TRAVIS_OS_NAME" == "x" ]; then
+  export TRAVIS_OS_NAME;
+  TRAVIS_OS_NAME=$(uname -s | perl -ne 'print lc \$1 if\(/^([a-zA-Z]+)/'\));
+fi
 
 if [ "x$COVERAGE" == "xyes" ]; then
   COVERAGE_OPT="--enable-coverage"
@@ -30,16 +45,18 @@ else
   COVERAGE_OPT="--disable-coverage"
 fi
 
+export MAKE_TARGET;
 if [ "x$BUILD" == "xstatic" ]; then
   SHARED_OPT="--disable-shared --enable-static"
   MAKE_TARGET="static"
 else
   # Makefile of sassc wants to link to static
   SHARED_OPT="--enable-shared --enable-static"
-  MAKE_TARGET="shared"
+  MAKE_TARGET="static"
 fi
 
-if [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+unameOut="$(uname -s)"
+if [ "${unameOut:1:10}" == "MINGW32_NT" ]; then
   MAKE_OPTS="$MAKE_OPTS -j1 V=1"
 else
   MAKE_OPTS="$MAKE_OPTS -j5 V=1"
@@ -65,11 +82,11 @@ if [ "x$CC" == "xclang" ]; then
   fi
 fi
 
-echo SASS_LIBSASS_PATH: $SASS_LIBSASS_PATH
-echo TRAVIS_BUILD_DIR: $TRAVIS_BUILD_DIR
-echo SASS_SASSC_PATH: $SASS_SASSC_PATH
-echo SASS_SPEC_PATH: $SASS_SPEC_PATH
-echo INSTALL_LOCATION: $PREFIX
+echo "SASS_LIBSASS_PATH: $SASS_LIBSASS_PATH"
+echo "TRAVIS_BUILD_DIR: $TRAVIS_BUILD_DIR"
+echo "SASS_SASSC_PATH: $SASS_SASSC_PATH"
+echo "SASS_SPEC_PATH: $SASS_SPEC_PATH"
+echo "INSTALL_LOCATION: $PREFIX"
 
 if [ "x$AUTOTOOLS" == "xyes" ]; then
 
@@ -77,30 +94,30 @@ if [ "x$AUTOTOOLS" == "xyes" ]; then
   autoreconf --force --install
   ./configure --enable-tests $COVERAGE_OPT \
     --disable-silent-rules \
-    --with-sassc-dir=$SASS_SASSC_PATH \
-    --with-sass-spec-dir=$SASS_SPEC_PATH \
-    --prefix=$PREFIX \
-    ${SHARED_OPT}
+    --with-sassc-dir="$SASS_SASSC_PATH" \
+    --with-sass-spec-dir="$SASS_SPEC_PATH" \
+    --prefix="$PREFIX" \
+    "${SHARED_OPT}"
   echo -en 'travis_fold:end:configure\r'
 
-  make $MAKE_OPTS clean
+  make "$MAKE_OPTS" clean
 
   # install to prefix directory
-  PREFIX="$PREFIX" make $MAKE_OPTS install
+  PREFIX="$PREFIX" make "$MAKE_OPTS" install
 
 else
 
-  make $MAKE_OPTS clean
+  make "$MAKE_OPTS" clean
 
 fi
 
 # install to prefix directory
-PREFIX="$PREFIX" make $MAKE_OPTS install
+PREFIX="$PREFIX" make "$MAKE_OPTS" install
 
-ls -la $PREFIX/*
+ls -la "$PREFIX"/*
 
-echo successfully compiled libsass
-echo AUTOTOOLS=$AUTOTOOLS COVERAGE=$COVERAGE BUILD=$BUILD
+echo "successfully compiled libsass"
+echo "AUTOTOOLS=$AUTOTOOLS COVERAGE=$COVERAGE BUILD=$BUILD"
 
 if [ "$CONTINUOUS_INTEGRATION" == "true" ] && [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ "x$TRAVIS_PULL_REQUEST" != "x" ] &&
    ([ "$TRAVIS_OS_NAME" == "linux" ] || [ "$TRAVIS_OS_NAME" == "osx" ] || [ "$TRAVIS_OS_NAME" == "cygwin" ]);
@@ -108,27 +125,27 @@ then
 
   echo "Fetching PR $TRAVIS_PULL_REQUEST"
 
-  JSON=$(curl -L -sS https://api.github.com/repos/sass/libsass/pulls/$TRAVIS_PULL_REQUEST)
+  JSON=$(curl -L -sS https://api.github.com/repos/sass/libsass/pulls/"$TRAVIS_PULL_REQUEST")
 
-  if [[ $JSON =~ "API rate limit exceeded" ]];
+  if [[ "$JSON" =~ "API rate limit exceeded" ]];
   then
     echo "Travis rate limit on github exceeded"
     echo "Retrying via 'special purpose proxy'"
-    JSON=$(curl -L -sS http://libsass.ocbnet.ch/libsass-spec-pr.psgi/$TRAVIS_PULL_REQUEST)
+    JSON=$(curl -L -sS http://libsass.ocbnet.ch/libsass-spec-pr.psgi/"$TRAVIS_PULL_REQUEST")
   fi
 
-  RE_SPEC_PR="sass\/sass-spec(#|\/pull\/)([0-9]+)"
+  RE_SPEC_PR="sass/sass-spec/pull/([0-9]+)"
 
-  if [[ $JSON =~ $RE_SPEC_PR ]];
+  if [[ "$JSON" =~ $RE_SPEC_PR ]];
   then
     SPEC_PR="${BASH_REMATCH[2]}"
     echo "Fetching Sass Spec PR $SPEC_PR"
-    git -C sass-spec fetch -u origin pull/$SPEC_PR/head:ci-spec-pr-$SPEC_PR
-    git -C sass-spec checkout --force ci-spec-pr-$SPEC_PR
-    LD_LIBRARY_PATH="$PREFIX/lib/" make $MAKE_OPTS test_probe
+    git -C sass-spec fetch -u origin pull/"$SPEC_PR"/head:ci-spec-pr-"$SPEC_PR"
+    git -C sass-spec checkout --force ci-spec-pr-"$SPEC_PR"
+    LD_LIBRARY_PATH="$PREFIX/lib/" make "$MAKE_OPTS" test_probe
   else
-    LD_LIBRARY_PATH="$PREFIX/lib/" make $MAKE_OPTS test_probe
+    LD_LIBRARY_PATH="$PREFIX/lib/" make "$MAKE_OPTS" test_probe
   fi
 else
-  LD_LIBRARY_PATH="$PREFIX/lib/" make $MAKE_OPTS test_probe
+  LD_LIBRARY_PATH="$PREFIX/lib/" make "$MAKE_OPTS" test_probe
 fi

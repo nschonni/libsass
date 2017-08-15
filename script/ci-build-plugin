@@ -1,8 +1,6 @@
 #!/bin/bash
 
 PLUGIN=$1
-RUBY_BIN=ruby
-SASS_SPEC_PATH=sass-spec
 SASSC_BIN=sassc/bin/sassc
 SASS_SPEC_SPEC_DIR=plugins/libsass-${PLUGIN}/test
 
@@ -19,7 +17,7 @@ if [ "x$1" == "x" ] ; then
   exit 1
 fi
 
-if [ "x$COVERAGE" == "0" ] ; then
+if [ "x$COVERAGE" == "xyes" ] ; then
   unset COVERAGE
 fi
 
@@ -33,30 +31,45 @@ else
 fi
 
 mkdir -p plugins
-if [ ! -d plugins/libsass-${PLUGIN} ] ; then
-  git clone https://github.com/mgreter/libsass-${PLUGIN} plugins/libsass-${PLUGIN}
+if [ ! -d "plugins/libsass-${PLUGIN}" ] ; then
+  git clone https://github.com/mgreter/libsass-"${PLUGIN}" "plugins/libsass-${PLUGIN}"
 fi
-if [ ! -d plugins/libsass-${PLUGIN}/build ] ; then
-  mkdir plugins/libsass-${PLUGIN}/build
+if [ ! -d "plugins/libsass-${PLUGIN}/build" ] ; then
+  mkdir "plugins/libsass-${PLUGIN}/build"
 fi
-RETVAL=$?; if [ "$RETVAL" != "0" ]; then exit $RETVAL; fi
+RETVAL=$?;
+if [ "$RETVAL" != "0" ]; then
+  exit $RETVAL;
+fi
 
-cd plugins/libsass-${PLUGIN}/build
+cd "plugins/libsass-${PLUGIN}/build" || exit
 cmake -G "Unix Makefiles" -D LIBSASS_DIR="../../.." ..
-RETVAL=$?; if [ "$RETVAL" != "0" ]; then exit $RETVAL; fi
+RETVAL=$?;
+if [ "$RETVAL" != "0" ]; then
+  exit $RETVAL;
+fi
 make VERBOSE=1 -j2
-RETVAL=$?; if [ "$RETVAL" != "0" ]; then exit $RETVAL; fi
-cd ../../..
+RETVAL=$?;
+if [ "$RETVAL" != "0" ]; then
+  exit $RETVAL;
+fi
+cd ../../.. || exit
 
 # glob only works on paths relative to imports
 if [ "x$PLUGIN" == "xglob" ]; then
-  ${SASSC_BIN} --plugin-path plugins/libsass-${PLUGIN}/build ${SASS_SPEC_SPEC_DIR}/basic/input.scss > ${SASS_SPEC_SPEC_DIR}/basic/result.css
-  ${SASSC_BIN} --plugin-path plugins/libsass-${PLUGIN}/build ${SASS_SPEC_SPEC_DIR}/basic/input.scss --sourcemap > /dev/null
+  "${SASSC_BIN}" --plugin-path "plugins/libsass-${PLUGIN}/build" "${SASS_SPEC_SPEC_DIR}/basic/input.scss" > "${SASS_SPEC_SPEC_DIR}/basic/result.css"
+  "${SASSC_BIN}" --plugin-path "plugins/libsass-${PLUGIN}/build" "${SASS_SPEC_SPEC_DIR}/basic/input.scss" --sourcemap > /dev/null
 else
-  cat ${SASS_SPEC_SPEC_DIR}/basic/input.scss | ${SASSC_BIN} --plugin-path plugins/libsass-${PLUGIN}/build -I ${SASS_SPEC_SPEC_DIR}/basic > ${SASS_SPEC_SPEC_DIR}/basic/result.css
-  cat ${SASS_SPEC_SPEC_DIR}/basic/input.scss | ${SASSC_BIN} --plugin-path plugins/libsass-${PLUGIN}/build -I ${SASS_SPEC_SPEC_DIR}/basic --sourcemap > /dev/null
+  cat "${SASS_SPEC_SPEC_DIR}/basic/input.scss" | "${SASSC_BIN}" --plugin-path "plugins/libsass-${PLUGIN}/build" -I "${SASS_SPEC_SPEC_DIR}/basic" > "${SASS_SPEC_SPEC_DIR}/basic/result.css"
+  cat "${SASS_SPEC_SPEC_DIR}/basic/input.scss" | "${SASSC_BIN}" --plugin-path "plugins/libsass-${PLUGIN}/build" -I "${SASS_SPEC_SPEC_DIR}/basic" --sourcemap > /dev/null
 fi
-RETVAL=$?; if [ "$RETVAL" != "0" ]; then exit $RETVAL; fi
+RETVAL=$?;
+if [ "$RETVAL" != "0" ]; then
+  exit $RETVAL;
+fi
 
-diff ${SASS_SPEC_SPEC_DIR}/basic/expected_output.css ${SASS_SPEC_SPEC_DIR}/basic/result.css
-RETVAL=$?; if [ "$RETVAL" != "0" ]; then exit $RETVAL; fi
+diff "${SASS_SPEC_SPEC_DIR}/basic/expected_output.css" "${SASS_SPEC_SPEC_DIR}/basic/result.css"
+RETVAL=$?;
+if [ "$RETVAL" != "0" ]; then
+  exit $RETVAL;
+fi
