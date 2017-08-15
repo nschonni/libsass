@@ -19,5 +19,6 @@ if [ "x$AUTOTOOLS" == "xyes" ]; then
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     brew uninstall libtool
     brew install libtool
+    rvm get head || true;
   fi
 fi
