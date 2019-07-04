@@ -845,6 +845,7 @@ namespace Sass {
     const char* kwd_else_directive(const char* src) {
       return word<else_kwd>(src);
     }
+
     const char* elseif_directive(const char* src) {
       return sequence< exactly< else_kwd >,
                                 optional_css_comments,

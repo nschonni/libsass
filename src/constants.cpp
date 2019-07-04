@@ -41,6 +41,7 @@ namespace Sass {
     extern const char extend_kwd[]        = "@extend";
     extern const char if_kwd[]            = "@if";
     extern const char else_kwd[]          = "@else";
+    extern const char elseif_kwd[]        = "@elseif";
     extern const char if_after_else_kwd[] = "if";
     extern const char for_kwd[]           = "@for";
     extern const char from_kwd[]          = "from";

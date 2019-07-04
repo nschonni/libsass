@@ -290,6 +290,8 @@ namespace Sass {
     // ignore the @charset directive for now
     else if (lex< kwd_charset_directive >(true)) { parse_charset_directive(); }
 
+    else if (lex < exactly < elseif_kwd >>(true)) { deprecated_function("Using @elseif instead of @else if", pstate); }
+
     else if (lex < exactly < else_kwd >>(true)) { error("Invalid CSS: @else must come after @if"); }
 
     // generic at keyword (keep last)
