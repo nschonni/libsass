@@ -29,6 +29,11 @@ jobs:
     - name: make
       run: mingw32-make -j4 sassc
 
+    - name: Set git to use LF for spec checkout
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
+
     # TODO: checkout specific PR ref if needed
     - name: Checkout sass-spec
       uses: actions/checkout@v2
