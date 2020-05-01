@@ -8,10 +8,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      CTEST_OUTPUT_ON_FAILURE: 1
-      ruby_version: 24-x64
       TargetPath: sassc/bin/sassc.exe
-      CC: gcc
 
     steps:
     - name: Checkout libsass
@@ -27,6 +24,8 @@ jobs:
       run: gem install minitest hrx --no-document
 
     - name: make
+      env:
+        CC: gcc
       run: mingw32-make -j4 sassc
 
     - name: Set git to use LF for spec checkout
