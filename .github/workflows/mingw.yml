@@ -13,14 +13,17 @@ jobs:
       TargetPath: sassc/bin/sassc.exe
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout libsass
+      uses: actions/checkout@v2
 
-    - uses: actions/checkout@v2
+    - name: Checkout sassc
+      uses: actions/checkout@v2
       with:
         repository: sass/sassc
         path: sassc
 
-    - uses: actions/checkout@v2
+    - name: Checkout sass-spec
+      uses: actions/checkout@v2
       with:
         repository: sass/sass-spec
         path: sass-spec
