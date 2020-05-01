@@ -18,10 +18,12 @@ jobs:
     - uses: actions/checkout@v2
       with:
         repository: sass/sassc
+        path: sassc
 
     - uses: actions/checkout@v2
       with:
         repository: sass/sass-spec
+        path: sass-spec
 
     - name: Install Ruby dependencies
       run: gem install minitest hrx --no-document
