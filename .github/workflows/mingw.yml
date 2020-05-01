@@ -11,6 +11,7 @@ jobs:
       CTEST_OUTPUT_ON_FAILURE: 1
       ruby_version: 24-x64
       TargetPath: sassc/bin/sassc.exe
+      CC: gcc
 
     steps:
     - name: Checkout libsass
