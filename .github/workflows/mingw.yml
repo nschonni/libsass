@@ -1,0 +1,33 @@
+name: Test with MinGW
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    env:
+      CTEST_OUTPUT_ON_FAILURE: 1
+      ruby_version: 24-x64
+      TargetPath: sassc/bin/sassc.exe
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/checkout@v2
+      with:
+        repository: sass/sassc
+
+    - uses: actions/checkout@v2
+      with:
+        repository: sass/sass-spec
+
+    - name: Install Ruby dependencies
+      run: gem install minitest hrx --no-ri --no-rdoc
+
+    - name: make
+      run: mingw32-make -j4 sassc
+
+    - name: Verify build version
+      run: ${{ env.TargetPath }} -v
