@@ -24,7 +24,9 @@ jobs:
         repository: sass/sass-spec
 
     - name: Install Ruby dependencies
-      run: gem install minitest hrx --no-ri --no-rdoc
+      run: |
+        gem install minitest --no-ri --no-rdoc
+        gem install hrx --no-ri --no-rdoc
 
     - name: make
       run: mingw32-make -j4 sassc
