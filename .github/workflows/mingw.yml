@@ -37,13 +37,13 @@ jobs:
         path: sass-spec
 
     - name: Run sass-spec tests
-      run: ruby sass-spec/sass-spec.rb --probe-todo --impl libsass -c $env:TargetPath -s sass-spec/spec
+      run: ruby sass-spec/sass-spec.rb --probe-todo --impl libsass -c ${{ env.TargetPath }} -s sass-spec/spec
 
     # See comments in gh-1774 for details.
     - name: Explicitly testing the case when cwd has Unicode characters
       run: |
         cd test/e2e/unicode-pwd/Sáss-UŢF8/
-        &$env:TargetPath ./input.scss 2>&1>$null
+        ${{ env.TargetPath }} ./input.scss 2>&1>$null
         if(-not($?)) {
           echo "Failed!"
           exit 1
