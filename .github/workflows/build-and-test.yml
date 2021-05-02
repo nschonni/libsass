@@ -163,10 +163,12 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: sass/sassc
+        path: sassc
     - name: Clone and checkout sass-spec repository
       uses: actions/checkout@v2
       with:
         repository: sass/sass-spec
+        path: sass-spec
     - name: Compile libsass ${{ matrix.config.build }} build for ${{ matrix.config.platform }}
       run: msbuild /m:4 /p:"Configuration=${{ matrix.config.build }};Platform=${{ matrix.config.platform }}" sassc\win\sassc.sln
     - name: Execute spec test runner
