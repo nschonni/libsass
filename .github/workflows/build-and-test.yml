@@ -157,9 +157,13 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
     - name: Clone and checkout sassc repository
-      run: git clone https://github.com/sass/sassc.git
+      uses: actions/checkout@v2
+      with:
+        repository: sass/sassc
     - name: Clone and checkout sass-spec repository
-      run: git clone https://github.com/sass/sass-spec.git
+      uses: actions/checkout@v2
+      with:
+        repository: sass/sass-spec
     - name: Compile libsass ${{ matrix.config.build }} build for ${{ matrix.config.platform }}
       run: msbuild /m:4 /p:"Configuration=${{ matrix.config.build }};Platform=${{ matrix.config.platform }}" sassc\win\sassc.sln
     - name: Execute spec test runner
@@ -197,9 +201,13 @@ jobs:
     - name: Install ruby minitest module
       run: gem install minitest
     - name: Clone and checkout sassc repository
-      run: git clone https://github.com/sass/sassc.git
+      uses: actions/checkout@v2
+      with:
+        repository: sass/sassc
     - name: Clone and checkout sass-spec repository
-      run: git clone https://github.com/sass/sass-spec.git
+      uses: actions/checkout@v2
+      with:
+        repository: sass/sass-spec
     - name: Add libsass library path to be found
       if: matrix.config.build == 'shared'
       run: echo "/d/a/libsass/libsass/lib" >> $GITHUB_PATH
