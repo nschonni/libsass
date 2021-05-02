@@ -117,10 +117,10 @@ jobs:
       env:
         MAKE_OPTS: LIBSASS_CPPSTD=${{ matrix.config.cppstd }}
       run: ./script/ci-install-deps
-    - name: ./script/ci-install-compiler
+    - name: Install sass-spec dependencies
       env:
         MAKE_OPTS: LIBSASS_CPPSTD=${{ matrix.config.cppstd }}
-      run: ./script/ci-install-compiler
+      run: gem install minitest minitap rspec hrx
     - name: ./script/ci-build-libsass
       env:
         MAKE_OPTS: LIBSASS_CPPSTD=${{ matrix.config.cppstd }}
