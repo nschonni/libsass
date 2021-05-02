@@ -113,10 +113,13 @@ jobs:
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         sudo apt update
         sudo apt install g++-4.4 -y
-    - name: ./script/ci-install-deps
+    - name: Install automake
       env:
         MAKE_OPTS: LIBSASS_CPPSTD=${{ matrix.config.cppstd }}
-      run: ./script/ci-install-deps
+      run: |
+        add-apt-repository -y ppa:rbose-debianizer/automake &> /dev/null
+        apt-get -qq update
+        apt-get -qq install automake
     - name: Install sass-spec dependencies
       env:
         MAKE_OPTS: LIBSASS_CPPSTD=${{ matrix.config.cppstd }}
